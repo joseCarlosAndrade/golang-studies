@@ -1,3 +1,8 @@
+/*
+# Pong Game in Golang
+
+Made by Jose Carlos Andrade do Nascimento (github: @joseCarlosAndrade). Pong implementation using raylib package.
+*/
 package pong
 
 import (
