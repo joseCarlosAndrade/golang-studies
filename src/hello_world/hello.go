@@ -303,9 +303,11 @@ func main() {
 	switch v := GenericGameObject1.(type) {
 	case *Mario:
 		fmt.Println("GenericGameObject1 is mario !")
+		
 	
 	case *Koopa:
 		fmt.Println("GenericGameObject1 is koopa !")
+		
 	default:
 		
 		fmt.Println("GenericGameObject1 is neither mario nor koopa !")
