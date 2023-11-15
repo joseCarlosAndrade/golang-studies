@@ -109,10 +109,17 @@ type Game struct {
 
 	ShouldClose bool // window should close
 
+	LeftScore int
+	RightScore int
+
 }
 
 func NewGame() (g *Game) {
 	g = &Game{}
+	g.ShouldClose =false
+	g.GameOver = false
+	g.LeftScore = 0
+	g.RightScore = 0
 	g.Init()
 
 	return

@@ -2,7 +2,7 @@ package pong
 
 import (
 	"math"
-
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -15,6 +15,14 @@ func InitEverything() *Game {
 	g.Init()
 
 	return g
+}
+
+func (b *Ball) Reset() {
+	b.Position.X = float32(ScreenWidth)/2
+	b.Position.Y = float32(ScreenHeight)/2
+
+	b.Velocity.X = BallVelocity*0.75
+	b.Velocity.Y = BallVelocity*0.25
 }
 
 func (g *Game)Run() {
@@ -65,9 +73,14 @@ func (g *Game) UpdateObjects() {
 			case HeightCollision:
 				v.Velocity.Y *= -1 // invert ball y velocity when it hits the floor or the top
 			case RightCollision:
-				g.ShouldClose = true
+				// g.ShouldClose = true
+				g.LeftScore += 1
+				
+				v.Reset()
 			case LeftCollision:
-				g.ShouldClose = true
+				// g.ShouldClose = true
+				g.RightScore += 1
+				v.Reset()
 			}
 		}
 	}
@@ -160,6 +173,9 @@ func (g Game) DrawObjects() {
 	
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.Black)
+
+	rl.DrawText(fmt.Sprint(g.LeftScore), 25, ScreenHeight-30, 30, rl.White)
+	rl.DrawText(fmt.Sprint(g.RightScore), ScreenWidth-40, ScreenHeight-30, 30, rl.White)
 
 	for _, obj := range g.Objects {
 		switch v := obj.(type) {
