@@ -1,6 +1,7 @@
 package pong
 
 import (
+	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -22,7 +23,7 @@ func (g *Game)Run() {
 	
 	rl.SetTargetFPS(int32(GameFPS))
 
-	for !rl.WindowShouldClose() {
+	for !rl.WindowShouldClose() && !g.ShouldClose {
 		g.Inputs()
 		g.UpdateObjects()
 		g.CheckBarBallCollision()
@@ -63,6 +64,10 @@ func (g *Game) UpdateObjects() {
 			switch collision {
 			case HeightCollision:
 				v.Velocity.Y *= -1 // invert ball y velocity when it hits the floor or the top
+			case RightCollision:
+				g.ShouldClose = true
+			case LeftCollision:
+				g.ShouldClose = true
 			}
 		}
 	}
@@ -76,7 +81,38 @@ func (g *Game)CheckBarBallCollision() {
 		// check 
 		if ball.Position.Y >= barleft.RectangleBar.Y &&
 		 ball.Position.Y <= barleft.RectangleBar.Y+barleft.RectangleBar.Height {
-			ball.Velocity.X *= -1
+			// ball.Velocity.X *= -1
+			if d :=barleft.BarDirection; d == Stopped {
+				ball.Velocity.X *= -1
+			} else if d == Up {
+				if ball.Velocity.Y >= BallVelocity*BallFactor { // max velocity
+					ball.Velocity.X *= -1
+					return
+				} else {
+					vy := ball.Velocity.Y
+					vy += SpeedIncrement
+					nvx := math.Sqrt(math.Pow(float64(BallVelocity), 2) + math.Pow(float64(vy), 2))
+
+					ball.Velocity.X = float32(nvx)
+					ball.Velocity.Y = vy
+
+				}
+			} else if d == Down {
+				if ball.Velocity.Y <= -1*BallVelocity*BallFactor { // max velocity
+					ball.Velocity.X *= -1
+					return
+				} else {
+					vy := ball.Velocity.Y
+					vy -= SpeedIncrement
+					nvx := math.Sqrt(math.Pow(float64(BallVelocity), 2) + math.Pow(float64(vy), 2))
+
+					ball.Velocity.X = float32(nvx)
+					ball.Velocity.Y = vy
+					
+				}
+			}
+
+
 		}
 		
 	} else if ball.Position.X+ball.Radius >= barright.RectangleBar.X {
@@ -84,7 +120,37 @@ func (g *Game)CheckBarBallCollision() {
 		// check
 		if ball.Position.Y >= barright.RectangleBar.Y &&
 		 ball.Position.Y <= barright.RectangleBar.Y+ barright.RectangleBar.Height {
-			ball.Velocity.X *= -1
+
+			if d:=barright.BarDirection; d == Stopped {
+				ball.Velocity.X *= -1
+			} else if d == Up {
+				if ball.Velocity.Y >= BallVelocity*BallFactor { // max velocity
+					ball.Velocity.X *= -1
+					return
+				} else {
+					vy := ball.Velocity.Y
+					vy += SpeedIncrement
+					nvx := math.Sqrt(math.Pow(float64(BallVelocity), 2) + math.Pow(float64(vy), 2))
+
+					ball.Velocity.X = float32(-nvx)
+					ball.Velocity.Y = vy
+
+				}
+
+			} else if d == Down {
+				if ball.Velocity.Y <= -1*BallVelocity*BallFactor { // max velocity
+					ball.Velocity.X *= -1
+					return
+				} else {
+					vy := ball.Velocity.Y
+					vy -= SpeedIncrement
+					nvx := math.Sqrt(math.Pow(float64(BallVelocity), 2) + math.Pow(float64(vy), 2))
+
+					ball.Velocity.X = float32(-nvx)
+					ball.Velocity.Y = vy
+					
+				}
+			}
 		}
 	}
 }

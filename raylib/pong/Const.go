@@ -19,6 +19,8 @@ const (
 	// ball
 	BallRadius float32 = 10
 	BallVelocity float32 = 13
+	BallFactor float32 = 0.6
+	SpeedIncrement float32 = 3
 
 	// enums for collision types
 	NoCollision Collision = 0x00
@@ -55,7 +57,7 @@ type Ball struct {
 func (b *Ball) UpdatePosition() Collision {
 	vx, vy := b.Velocity.X, b.Velocity.Y
 
-	b.Position = rl.NewVector2(b.Position.X + vx, b.Position.Y + vy)
+	b.Position = rl.NewVector2(b.Position.X + vx, b.Position.Y - vy)
 
 	x, y := b.Position.X, b.Position.Y
 
@@ -120,7 +122,7 @@ func (g *Game) Init() {
 	// creating the main game object
 	var ball GameObject  = 
 			&Ball{rl.NewVector2(float32(ScreenWidth)/2, float32(ScreenHeight)/2), 
-			rl.NewVector2(BallVelocity, 0), 
+			rl.NewVector2(BallVelocity*0.9, BallVelocity*0.1), 
 			BallRadius, 
 			rl.NewColor(255, 255, 255, 255)}
 	var barleft GameObject = 
