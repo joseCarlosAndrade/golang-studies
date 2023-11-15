@@ -14,10 +14,11 @@ const (
 	ScreenHeight int32 = 600
 	ScreenTitle string = "Pong!"
 	GameFPS int = 30
+	WallDistance float32 = 10
 
 	// ball
 	BallRadius float32 = 10
-	BallVelocity float32 = 20
+	BallVelocity float32 = 13
 
 	// enums for collision types
 	NoCollision Collision = 0x00
@@ -26,7 +27,7 @@ const (
 	HeightCollision Collision = 0x03
 
 	// bar 
-	BarVelocity float32 = 3
+	BarVelocity float32 = 15
 	BarWidth float32 = 10
 	Barheight float32 = 120
 	
@@ -119,15 +120,15 @@ func (g *Game) Init() {
 	// creating the main game object
 	var ball GameObject  = 
 			&Ball{rl.NewVector2(float32(ScreenWidth)/2, float32(ScreenHeight)/2), 
-			rl.NewVector2(0, BallVelocity), 
+			rl.NewVector2(BallVelocity, 0), 
 			BallRadius, 
 			rl.NewColor(255, 255, 255, 255)}
 	var barleft GameObject = 
-			&Bar{rl.NewRectangle(10, float32(ScreenHeight)/2 - Barheight/2, BarWidth, Barheight), 
+			&Bar{rl.NewRectangle(WallDistance, float32(ScreenHeight)/2 - Barheight/2, BarWidth, Barheight), 
 			Stopped, 
 			rl.NewColor(255,255,255,255)}
 	var barright GameObject = 
-			&Bar{rl.NewRectangle(float32(ScreenWidth)-10-BarWidth, float32(ScreenHeight)/2 - Barheight/2, BarWidth, Barheight), 
+			&Bar{rl.NewRectangle(float32(ScreenWidth)-WallDistance-BarWidth, float32(ScreenHeight)/2 - Barheight/2, BarWidth, Barheight), 
 			Stopped, 
 			rl.NewColor(255,255,255,255)}
 
