@@ -7,6 +7,7 @@ package pong
 
 import (
 	"math"
+	"math/rand"
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -26,8 +27,12 @@ func (b *Ball) Reset() {
 	b.Position.X = float32(ScreenWidth)/2
 	b.Position.Y = float32(ScreenHeight)/2
 
-	b.Velocity.X = BallVelocity*0.75
-	b.Velocity.Y = BallVelocity*0.25
+	vy := rand.Intn(6)
+	vx := math.Sqrt(math.Pow(float64(BallVelocity), 2) + math.Pow(float64(vy), 2))
+	if rand.Intn(2) == 1 {vx *= -1}
+	if rand.Intn(2) == 1 {vy *= -1}
+	b.Velocity.X = float32(vx)
+	b.Velocity.Y = float32(vy)
 }
 
 func (g *Game)Run() {
@@ -107,6 +112,7 @@ func (g *Game)CheckBarBallCollision() {
 					ball.Velocity.X *= -1
 					return
 				} else {
+					
 					vy := ball.Velocity.Y
 					vy += SpeedIncrement
 					nvx := math.Sqrt(math.Pow(float64(BallVelocity), 2) + math.Pow(float64(vy), 2))

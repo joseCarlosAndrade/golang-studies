@@ -18,7 +18,7 @@ const (
 
 	// ball
 	BallRadius float32 = 10
-	BallVelocity float32 = 13
+	BallVelocity float32 = 20
 	BallFactor float32 = 0.6
 	SpeedIncrement float32 = 3
 
