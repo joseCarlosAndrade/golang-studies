@@ -4,8 +4,10 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+// Collision type, handles all possible collisions
 type Collision int
 
+// Direction type, handles all possible directions
 type Direction int
 
 const (
@@ -39,10 +41,16 @@ const (
 	Stopped Direction = 0x03
 )
 
+/* 
+GameObject interface. It works more less like a virtual inheritance. All types taht implement this interface
+must implements UpdatePosition() method so it can be treated as a GameObject. This allows the objects to be treated equally,
+like having the Game type storing an array of multiple GameObjects, even though they're different like bars and ball. */
 type GameObject interface {
 	UpdatePosition() Collision
 }
 
+/*
+Ball type */
 type Ball struct {
 	Position rl.Vector2
 	Velocity rl.Vector2
@@ -53,7 +61,8 @@ type Ball struct {
 
 // implementing GameObject interface on game objects
 
-// update ball position based on collision
+/*
+Implementing GameObject interface on Ball type. */
 func (b *Ball) UpdatePosition() Collision {
 	vx, vy := b.Velocity.X, b.Velocity.Y
 
@@ -71,6 +80,8 @@ func (b *Ball) UpdatePosition() Collision {
 	return NoCollision // no scenario collision
 }
 
+/*
+Bar type. */
 type Bar struct {
 	RectangleBar rl.Rectangle
 	// MaxYVelocity float64
@@ -79,6 +90,8 @@ type Bar struct {
 	BarColor rl.Color
 }
 
+/*
+Implementing GameObject interface on Bar type. */
 func (b *Bar) UpdatePosition() Collision {
 	// if going on a collision direction, returns
 	if b.BarDirection == Up {
@@ -98,6 +111,8 @@ func (b *Bar) UpdatePosition() Collision {
 	return NoCollision
 }	
 
+/*
+Main game type. Manages everything that happens in game. */
 type Game struct {
 	Ball Ball
 	Bar1 * Bar
@@ -114,6 +129,8 @@ type Game struct {
 
 }
 
+/*
+Creates a new game and returns it. */
 func NewGame() (g *Game) {
 	g = &Game{}
 	g.ShouldClose =false
@@ -125,6 +142,8 @@ func NewGame() (g *Game) {
 	return
 } 
 
+/*
+Initializes everything game-related (apart from the screen). */
 func (g *Game) Init() {
 	// creating the main game object
 	var ball GameObject  = 
@@ -144,5 +163,7 @@ func (g *Game) Init() {
 	g.Objects[0] = ball
 	g.Objects[1] = barleft
 	g.Objects[2] = barright
+
+	g.Objects[0].(*Ball).Reset() // reseting ball information so it spawns randomly
 }
 

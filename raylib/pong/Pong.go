@@ -13,7 +13,8 @@ import (
 )
 
 
-
+/* 
+Initializes everything from window to logic game. */
 func InitEverything() *Game {
 	rl.InitWindow(ScreenWidth, ScreenHeight, ScreenTitle)
 
@@ -23,6 +24,8 @@ func InitEverything() *Game {
 	return g
 }
 
+/* 
+Resets the ball Position so it spawns randomly every time. */
 func (b *Ball) Reset() {
 	b.Position.X = float32(ScreenWidth)/2
 	b.Position.Y = float32(ScreenHeight)/2
@@ -35,6 +38,8 @@ func (b *Ball) Reset() {
 	b.Velocity.Y = float32(vy)
 }
 
+/* 
+Main loop that runs the game and handles input, object update, collision detection and drawing. */
 func (g *Game)Run() {
 
 	defer rl.CloseWindow() // pushing this function to stack to close window after
@@ -49,6 +54,8 @@ func (g *Game)Run() {
 	}
 }
 
+/* 
+Handles input from terminal */
 func (g *Game) Inputs() {
 	// right bar
 	if rl.IsKeyDown(rl.KeyUp) {
@@ -73,6 +80,9 @@ func (g *Game) Inputs() {
 	}
 }
 
+/* 
+Updates all objects on the game by the GameObject interface that implements UpdatePosition() method. Each update also
+handles screen border collision, returning a Collision type. */
 func (g *Game) UpdateObjects() {
 	for _, obj := range g.Objects {
 		collision := obj.UpdatePosition()
@@ -96,11 +106,14 @@ func (g *Game) UpdateObjects() {
 	}
 }
 
+/* 
+Checks the collision between the ball and the bar. This collision is checked separately from the screen border
+collision because this one is a little more complex and it's better organized this way. */
 func (g *Game)CheckBarBallCollision() {
 	ball := g.Objects[0].(*Ball)
 	barleft := g.Objects[1].(*Bar)
 	barright := g.Objects[2].(*Bar)
-	if ball.Position.X-ball.Radius <= barleft.RectangleBar.X+barleft.RectangleBar.Width { // right x
+	if ball.Position.X-ball.Radius <= barleft.RectangleBar.X+barleft.RectangleBar.Width { // left bar
 		// check 
 		if ball.Position.Y >= barleft.RectangleBar.Y &&
 		 ball.Position.Y <= barleft.RectangleBar.Y+barleft.RectangleBar.Height {
@@ -139,7 +152,7 @@ func (g *Game)CheckBarBallCollision() {
 
 		}
 		
-	} else if ball.Position.X+ball.Radius >= barright.RectangleBar.X {
+	} else if ball.Position.X+ball.Radius >= barright.RectangleBar.X { // right bar
 
 		// check
 		if ball.Position.Y >= barright.RectangleBar.Y &&
@@ -179,12 +192,14 @@ func (g *Game)CheckBarBallCollision() {
 	}
 }
 
-
+/* 
+Draws everything. It initializes rl.BeginDrawinG() and ends it here, so every draw method must be implemented here. */
 func (g Game) DrawObjects() {
 	
 	rl.BeginDrawing()
-	rl.ClearBackground(rl.Black)
+	rl.ClearBackground(rl.Black) // black background
 
+	// scores
 	rl.DrawText(fmt.Sprint(g.LeftScore), 25, ScreenHeight-30, 30, rl.White)
 	rl.DrawText(fmt.Sprint(g.RightScore), ScreenWidth-40, ScreenHeight-30, 30, rl.White)
 

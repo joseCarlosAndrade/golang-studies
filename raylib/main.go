@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"raylib/pong"
-	// rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func main() {
