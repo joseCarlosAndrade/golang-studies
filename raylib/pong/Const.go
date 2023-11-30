@@ -42,7 +42,7 @@ const (
 )
 
 /* 
-GameObject interface. It works more less like a virtual inheritance. All types taht implement this interface
+GameObject interface. It works more less like a virtual implementation (abstraction). All types taht implement this interface
 must implements UpdatePosition() method so it can be treated as a GameObject. This allows the objects to be treated equally,
 like having the Game type storing an array of multiple GameObjects, even though they're different like bars and ball. */
 type GameObject interface {
