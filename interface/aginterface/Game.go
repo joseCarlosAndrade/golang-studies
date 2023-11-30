@@ -1,5 +1,7 @@
 package aginterface
 
+import rl "github.com/gen2brain/raylib-go/raylib"
+
 // import (
 // )
 
@@ -38,4 +40,28 @@ func NewGame() *Game {
 		CurrentPlayer: 1, // start as X
 	}
 	return game
+}
+
+func (g * Game)PlayRound(b * BoardPiece) bool {
+	if b.Shape != NAS { return false} // if not empty, doesnt play
+
+	if g.CurrentPlayer ==1 {
+		b.Shape = X
+	} else {
+		b.Shape = O
+	}
+	g.CurrentPlayer *= -1 // invert current player
+
+	return true
+}
+
+func (g Game)PutPlayerOnScreen(x, y, fontSize int32) {
+	var text string
+	if g.CurrentPlayer == 1 {
+		text = "Player 1 (X)!"
+		
+	} else {
+		text = "Player 2 (O)!"
+	}
+	rl.DrawText(text, x, y, fontSize, rl.White)
 }

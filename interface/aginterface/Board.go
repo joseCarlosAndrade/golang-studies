@@ -63,3 +63,4 @@ func NewBoard(box Limits) Board {
 
 	return b
 }
+
