@@ -79,13 +79,16 @@ func (g* Game)drawEverything() {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.Black)
 
-	drawBoard(g.Boards[0])
+	// drawBoard(g.Boards[0])
+	for i := 0; i < len(g.Boards); i++ {
+		drawBoard(&g.Boards[i])
+	}
 	g.PutPlayerOnScreen(60, 470, 20)
 
 	rl.EndDrawing()
 }
 
-func drawBoard(b Board) {
+func drawBoard(b* Board) {
 	// limits of board
 	// rl.DrawRectangle(BoardX, BoardY, BoardWidth, BoardHeight, rl.Gray)
 
@@ -101,48 +104,50 @@ func drawBoard(b Board) {
 			color.G += 25
 			color.B += 90
 			color.R += 90
-			b.Selected = false
+			// b.Selected = false
 
 			// fmt.Println("color is selected")
 		}
 		rl.DrawRectangle(b.Box.xo+BoardGap, b.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, color)
+		b.Selected = false
 	}
 
 	// drawing lines (test so far)
 	for  i  := 0; i < 2; i++ {
-		x := BoardX + (int32(i)+1)*BoardSpacing
-		rl.DrawLine(x-1, BoardY, x-1, BoardY+BoardHeight, rl.White)
-		rl.DrawLine(x, BoardY, x, BoardY+BoardHeight, rl.White)
-		rl.DrawLine(x+1, BoardY, x+1, BoardY+BoardHeight, rl.White)
+		
+		x := b.BoardBox.xo + (int32(i)+1)*BoardWidth/3
+		rl.DrawLine(x-1, b.BoardBox.yo, x-1, b.BoardBox.yf, rl.White)
+		rl.DrawLine(x, b.BoardBox.yo, x, b.BoardBox.yf, rl.White)
+		rl.DrawLine(x+1, b.BoardBox.yo, x+1, b.BoardBox.yf, rl.White)
 	}
 
 	for  i  := 0; i < 2; i++ {
-		y := BoardY + (int32(i)+1)*BoardSpacing
-		rl.DrawLine(BoardX, y-1, BoardX+BoardWidth, y-1, rl.White)
-		rl.DrawLine(BoardX, y, BoardX+BoardWidth, y, rl.White)
-		rl.DrawLine(BoardX, y+1, BoardX+BoardWidth, y+1, rl.White)
+		y := b.BoardBox.yo + (int32(i)+1)*BoardHeight/3
+		rl.DrawLine(b.BoardBox.xo, y-1, b.BoardBox.xf, y-1, rl.White)
+		rl.DrawLine(b.BoardBox.xo, y, b.BoardBox.xf, y, rl.White)
+		rl.DrawLine(b.BoardBox.xo, y+1, b.BoardBox.xf, y+1, rl.White)
 	}
 
 	// drawing shapes
 	for _, piece := range b.Content {
 		if piece.Shape == NAS { continue }
+		drawShape(piece, piece.Shape)
 		
-		if piece.Shape == X {
-			drawShape(piece, X)
-			// rl.DrawLine(piece.Box.xo+1+gap, piece.Box.yo+gap, piece.Box.xf-gap, piece.Box.yf - 1 - gap, rl.Red)
-			// rl.DrawLine(piece.Box.xo+gap, piece.Box.yo+gap, piece.Box.xf-gap, piece.Box.yf - gap, rl.Red)
-			// rl.DrawLine(piece.Box.xo+gap, piece.Box.yo+1+gap, piece.Box.xf-1-gap, piece.Box.yf - gap, rl.Red)
+		// if piece.Shape == X {
+		// 	drawShape(piece, X)
+		// 	// rl.DrawLine(piece.Box.xo+1+gap, piece.Box.yo+gap, piece.Box.xf-gap, piece.Box.yf - 1 - gap, rl.Red)
+		// 	// rl.DrawLine(piece.Box.xo+gap, piece.Box.yo+gap, piece.Box.xf-gap, piece.Box.yf - gap, rl.Red)
+		// 	// rl.DrawLine(piece.Box.xo+gap, piece.Box.yo+1+gap, piece.Box.xf-1-gap, piece.Box.yf - gap, rl.Red)
 
-			// rl.DrawLine(piece.Box.xf-gap, piece.Box.yo+gap, piece.Box.xo+1+gap, piece.Box.yf - 1 - gap, rl.Red)
-			// rl.DrawLine(piece.Box.xf-gap, piece.Box.yo+gap, piece.Box.xo+gap , piece.Box.yf - gap, rl.Red)
-			// rl.DrawLine(piece.Box.xf-1-gap, piece.Box.yo+1+gap, piece.Box.xo+gap, piece.Box.yf - gap, rl.Red)
-			// rl.DrawRectangle(piece.Box.xo+BoardGap, piece.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, rl.Red)
-		} else {
-			// rl.DrawRectangle(piece.Box.xo+BoardGap, piece.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, rl.Blue)
-			drawShape(piece, O)
-		}
+		// 	// rl.DrawLine(piece.Box.xf-gap, piece.Box.yo+gap, piece.Box.xo+1+gap, piece.Box.yf - 1 - gap, rl.Red)
+		// 	// rl.DrawLine(piece.Box.xf-gap, piece.Box.yo+gap, piece.Box.xo+gap , piece.Box.yf - gap, rl.Red)
+		// 	// rl.DrawLine(piece.Box.xf-1-gap, piece.Box.yo+1+gap, piece.Box.xo+gap, piece.Box.yf - gap, rl.Red)
+		// 	// rl.DrawRectangle(piece.Box.xo+BoardGap, piece.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, rl.Red)
+		// } else {
+		// 	// rl.DrawRectangle(piece.Box.xo+BoardGap, piece.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, rl.Blue)
+		// 	drawShape(piece, O)
+		// }
 	}
-
 }
 
 
