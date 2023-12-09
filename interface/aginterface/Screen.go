@@ -1,7 +1,6 @@
 package aginterface
 
 import (
-	"fmt"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -18,6 +17,16 @@ func (g * Game)Run() {
 	
 	for !rl.WindowShouldClose() {
 		g.input()
+		if g.checkGeneralState() {
+			if g.State == VICTORYO {
+				GameText = "Game ended. Player 2 (O) WINS!"
+			} else if g.State == VICTORYX {
+				GameText = "Game ended. Player 1 (X) WINS!"				
+			} else {
+				GameText = "Game ended. TIE!"
+			}
+			break
+		}
 		// update
 		// draw
 		g.drawEverything()
@@ -46,7 +55,15 @@ func (g*Game)insideLimitPiece(x, y int, b* Board) {
 
 			// implement click here
 			if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-				if g.PlayRound(piece) { b.Count++}
+				if g.PlayRound(piece) { 
+					b.Count++
+					
+					if g.Boards[i].Count < 9  {
+						g.NextPlayableBoard = i
+					} else {
+						g.NextPlayableBoard = -1
+					}
+				}
 				
 				if b.BoardState == GOING {b.CheckGameState()}
 				
@@ -60,9 +77,9 @@ func (g*Game)insideLimitPiece(x, y int, b* Board) {
 
 func (g* Game)input() {
 
-	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
-		fmt.Println(rl.GetMousePosition())
-	}
+	// if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+	// 	fmt.Println(rl.GetMousePosition())
+	// }
 
 	x,y := int(rl.GetMousePosition().X), int(rl.GetMousePosition().Y)
 
@@ -70,7 +87,7 @@ func (g* Game)input() {
 
 		b := &g.Boards[i]
 		// check first if mouse is inside board b
-		if insideLimit(x, y, b.BoardBox) && b.Count <9 {
+		if insideLimit(x, y, b.BoardBox) && b.Count <9 && g.State == GOING && ( g.NextPlayableBoard ==-1 || g.NextPlayableBoard ==i) {
 			// if it is, then checks the board piece
 			g.insideLimitPiece(x, y, b)
 			break // doesnt need to check all boards if one is detected
@@ -80,13 +97,16 @@ func (g* Game)input() {
 
 func (g* Game)drawEverything() {
 	rl.BeginDrawing()
-	rl.ClearBackground(rl.Black)
+	rl.ClearBackground(rl.NewColor(20, 20, 20, 255))
 
-	// drawBoard(g.Boards[0])
+	// everything that has to be done to each 9 boards
 	for i := 0; i < len(g.Boards); i++ {
 		drawBoard(&g.Boards[i])
 	}
-	g.PutPlayerOnScreen(60, 470, 20)
+
+	drawBiggerLines()
+
+	g.PutTextToScreen(60, 675, 20)
 
 	rl.EndDrawing()
 }
@@ -111,7 +131,12 @@ func drawBoard(b* Board) {
 
 			// fmt.Println("color is selected")
 		}
-		rl.DrawRectangle(b.Box.xo+BoardGap, b.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, color)
+		// rl.DrawRectangle(b.Box.xo+BoardGap, b.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, color)
+		rl.DrawRectangleRounded(rl.NewRectangle(float32(b.Box.xo+BoardGap), float32(b.Box.yo+BoardGap), float32(width-2*BoardGap), 
+		float32(height-2*BoardGap)), 0.2, 0, color)
+
+		// teste com gradientes
+		// rl.DrawRectangleGradientH(b.Box.xo+BoardGap, b.Box.yo+BoardGap, width-2*BoardGap, height-2*BoardGap, color, rl.Blue)
 		b.Selected = false
 	}
 
@@ -165,6 +190,14 @@ func drawShape(b Limits, s Shape, big bool) {
 	height := b.yf - b.yo
 	gap := BoardGap + 10
 
+	if !big { 
+		// rl.DrawRectangle(b.xo+BoardGap, b.yo+BoardGap, width-2*+BoardGap, height-2*+BoardGap, 
+		// rl.NewColor(rl.DarkGreen.R+40, rl.DarkGreen.G+40, rl.DarkGreen.B+40, rl.DarkGreen.A) ) 
+
+		rl.DrawRectangleRounded(rl.NewRectangle(float32(b.xo+BoardGap), float32(b.yo+BoardGap), float32(width-2*BoardGap), 
+		float32(height-2*BoardGap)), 0.2, 0, rl.NewColor(rl.DarkGreen.R+40, rl.DarkGreen.G+40, rl.DarkGreen.B+40, rl.DarkGreen.A))
+	}
+
 	if s == X {
 		for i:=int32(0); i < 100; i ++ {
 			xl := b.xo + gap + i*(width - 2*gap)/100
@@ -173,22 +206,22 @@ func drawShape(b Limits, s Shape, big bool) {
 
 			if big {
 
-				rl.DrawCircle(xl, y, 3, rl.DarkPurple)
-				rl.DrawCircle(xr, y, 3, rl.DarkPurple)
+				rl.DrawCircle(xl, y, 3, rl.Black)
+				rl.DrawCircle(xr, y, 3, rl.Black)
 				
 			}else {
-				rl.DrawCircle(xl, y, 3, rl.Red)
-				rl.DrawCircle(xr, y, 3, rl.Red)
+				rl.DrawCircle(xl, y, 4, rl.Red)
+				rl.DrawCircle(xr, y, 4, rl.Red)
 			}
 		}
 	} else if s == O {
-		radius := (width - 2*gap)/2 -5
+		radius := (width + 1 - 2*gap)/2 -5
 		for i:=0 ; i < 6; i++ {
 			if big {
-				rl.DrawCircleLines((b.xf + b.xo)/2, (b.yf + b.yo)/2, float32(radius)+float32(i), rl.DarkBlue)
+				rl.DrawCircleLines((b.xf + b.xo)/2, (b.yf + b.yo)/2, float32(radius)+float32(i), rl.White)
 				
 			} else {
-				rl.DrawCircleLines((b.xf + b.xo)/2, (b.yf + b.yo)/2, float32(radius)+float32(i), rl.Blue)
+				rl.DrawCircleLines((b.xf + b.xo)/2, (b.yf + b.yo)/2, float32(radius)+float32(i), rl.DarkBlue)
 			}
 			
 		}
@@ -239,8 +272,39 @@ func (b* Board)CheckGameState() { // recicling code from my tic tac toe game
 				b.BoardState = VICTORYO
 			}
 		}
+
+		for _,v := range b.Content {
+			if v.Shape == NAS {
+				return
+			}
+		}
 		
 }
+
+
+func drawBiggerLines() {
+	thisWidth := 3*BoardWidth+ 2*BoardSpacing
+	thisHeight := 3*BoardHeight+ 2*BoardSpacing
+
+	BoardXf := BoardX + thisWidth
+	BoardYf := BoardY + thisHeight
+
+	for  i  := 0; i < 2; i++ {
+		
+		x := BoardX + (int32(i)+1)*thisWidth/3
+		rl.DrawLine(x-1, BoardY, x-1, BoardYf, rl.White)
+		rl.DrawLine(x, BoardY, x, BoardYf, rl.White)
+		rl.DrawLine(x+1, BoardY, x+1, BoardYf, rl.White)
+	}
+
+	for  i  := 0; i < 2; i++ {
+		y := BoardY + (int32(i)+1)*thisHeight/3
+		rl.DrawLine(BoardX, y-1, BoardXf, y-1, rl.White)
+		rl.DrawLine(BoardX, y, BoardXf, y, rl.White)
+		rl.DrawLine(BoardX, y+1, BoardXf, y+1, rl.White)
+	}
+}
+
 
 
 /*

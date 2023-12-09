@@ -10,9 +10,12 @@ import (
 func main() {
 	fmt.Println("init")
 
+	// for {
 	game := agin.NewGame()
 	game.InitScreen()
 	game.Run()
+	// }
+	
 	// rl.InitWindow(agin.ScreenWidth, agin.ScreenWidth, agin.ScreenTitle);
 	// fmt.Println(agin.ScreenHeight)
 	// rl.SetTargetFPS(agin.ScreenFPS)

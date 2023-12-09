@@ -2,8 +2,8 @@ package aginterface
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-// import (
-// )
+
+
 
 // screen
 const (
@@ -12,18 +12,26 @@ const (
 	ScreenFPS int32 = 30
 	ScreenTitle string = "Jogo do Asilo"
 
+	
+
 	// board
 	BoardX int32 = 80
 	BoardY int32 = 50
 	BoardWidth int32 = 200
 	BoardHeight int32 = 200
-	BoardSpacing int32 = 10
+	BoardSpacing int32 = 10 // space between different boards
 	BoardGap int32 = 5 // gap from the borders
+	
+	AllBoards int = -1
+)
 
+var (
+	GameText string = ""
 )
 
 type Game struct {
 	Boards []Board
+	NextPlayableBoard int // number which defines the board that can be played (-1 for all of them)
 	State State
 	CurrentPlayer Shape
 }
@@ -47,6 +55,7 @@ func NewGame() *Game {
 
 	game := &Game{
 		Boards: boards,
+		NextPlayableBoard: -1,
 		State: GOING,
 		CurrentPlayer: X, // start as X
 	}
@@ -66,13 +75,76 @@ func (g * Game)PlayRound(b * BoardPiece) bool {
 	return true
 }
 
-func (g Game)PutPlayerOnScreen(x, y, fontSize int32) {
-	var text string
-	if g.CurrentPlayer == 1 {
-		text = "Player 1 (X)!"
-		
-	} else {
-		text = "Player 2 (O)!"
+func (g Game)PutTextToScreen(x, y, fontSize int32) {
+
+	if g.State == GOING {
+		if g.CurrentPlayer == 1 {
+			GameText = "Player 1 (X)!"
+			
+		} else {
+			GameText = "Player 2 (O)!"
+		}
 	}
-	rl.DrawText(text, x, y, fontSize, rl.White)
+	
+	rl.DrawText(GameText, x, y, fontSize, rl.White)
+}
+
+func (g *Game) checkGeneralState() bool {
+	/// check for board matching
+	for i:=0 ; i < 3; i++ {
+		// checking lines
+		
+		if g.Boards[3*i].BoardState == GOING {
+				
+		} else if g.Boards[3*i].BoardState == g.Boards[3*i+1].BoardState && g.Boards[3*i].BoardState == g.Boards[3*i+2].BoardState {
+			if g.Boards[3*i].BoardState == VICTORYX {
+				g.State = VICTORYX
+			} else {
+				g.State = VICTORYO
+			}
+			return true
+			
+		}
+
+		// checking rows
+		if g.Boards[i].BoardState == GOING {
+				
+		} else if g.Boards[i].BoardState == g.Boards[i+3].BoardState && g.Boards[i].BoardState == g.Boards[i+6].BoardState {
+			if g.Boards[i].BoardState == VICTORYX {
+				g.State = VICTORYX
+			} else {
+				g.State = VICTORYO
+			}
+			return true
+		}               
+
+		}
+		// checking diagonals
+
+		if (g.Boards[0].BoardState != GOING)&&g.Boards[0].BoardState==g.Boards[4].BoardState && g.Boards[0].BoardState==g.Boards[8].BoardState {
+			if g.Boards[0].BoardState == VICTORYX {
+				g.State = VICTORYX
+			} else {
+				g.State = VICTORYO
+			}
+			return true
+
+		} else if (g.Boards[2].BoardState != GOING) &&g.Boards[2].BoardState==g.Boards[4].BoardState && g.Boards[2].BoardState==g.Boards[6].BoardState {
+			if g.Boards[2].BoardState == VICTORYX {
+				g.State = VICTORYX
+			} else {
+				g.State = VICTORYO
+			}
+			return true
+		}
+
+		for _, b := range g.Boards {
+			if b.BoardState == GOING { // verify that the game can still be played 
+				return false
+			}
+		}
+		g.State = TIE
+		return true // if it gets here, it means that a tie has ocurred
+
+	// if so, updates the game state
 }
