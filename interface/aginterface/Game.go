@@ -24,8 +24,8 @@ const (
 
 type Game struct {
 	Boards []Board
-	State int
-	CurrentPlayer int
+	State State
+	CurrentPlayer Shape
 }
 
 func NewGame() *Game {
@@ -47,8 +47,8 @@ func NewGame() *Game {
 
 	game := &Game{
 		Boards: boards,
-		State: 0,
-		CurrentPlayer: 1, // start as X
+		State: GOING,
+		CurrentPlayer: X, // start as X
 	}
 	return game
 }
@@ -56,7 +56,7 @@ func NewGame() *Game {
 func (g * Game)PlayRound(b * BoardPiece) bool {
 	if b.Shape != NAS { return false} // if not empty, doesnt play
 
-	if g.CurrentPlayer ==1 {
+	if g.CurrentPlayer == 1 {
 		b.Shape = X
 	} else {
 		b.Shape = O

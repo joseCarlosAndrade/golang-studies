@@ -3,11 +3,19 @@ package aginterface
 // import rl "github.com/gen2brain/raylib-go/raylib"
 
 type Shape int
+type State int
 
 const (
 	X Shape = 1
 	O Shape = -1 
 	NAS Shape = 0
+
+
+	// game states that can be achieved by each board (can also be used in general game)
+	GOING State = 0x010
+	VICTORYX State = 0x011
+	VICTORYO State = 0x100
+	TIE State = 0x101
 )
 
 type Limits struct {
@@ -27,6 +35,8 @@ type BoardPiece struct {
 type Board struct {
 	Content [9]BoardPiece
 	BoardBox Limits
+	BoardState State
+	Count int
 }
 
 func NewBoard(box Limits) Board {
@@ -59,6 +69,8 @@ func NewBoard(box Limits) Board {
 	b := Board{
 		bp,
 		box,
+		GOING,
+		0,
 	}
 
 	return b

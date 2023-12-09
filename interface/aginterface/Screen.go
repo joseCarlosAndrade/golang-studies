@@ -46,7 +46,10 @@ func (g*Game)insideLimitPiece(x, y int, b* Board) {
 
 			// implement click here
 			if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-				g.PlayRound(piece)
+				if g.PlayRound(piece) { b.Count++}
+				
+				if b.BoardState == GOING {b.CheckGameState()}
+				
 			}
 						
 		} else {
@@ -67,7 +70,7 @@ func (g* Game)input() {
 
 		b := &g.Boards[i]
 		// check first if mouse is inside board b
-		if insideLimit(x, y, b.BoardBox) {
+		if insideLimit(x, y, b.BoardBox) && b.Count <9 {
 			// if it is, then checks the board piece
 			g.insideLimitPiece(x, y, b)
 			break // doesnt need to check all boards if one is detected
@@ -131,7 +134,13 @@ func drawBoard(b* Board) {
 	// drawing shapes
 	for _, piece := range b.Content {
 		if piece.Shape == NAS { continue }
-		drawShape(piece, piece.Shape)
+		drawShape(piece.Box, piece.Shape, false)
+
+		if b.BoardState == VICTORYX {
+			drawShape(b.BoardBox, X, true)
+		} else if b.BoardState == VICTORYO{
+			drawShape(b.BoardBox, O, true)
+		}
 		
 		// if piece.Shape == X {
 		// 	drawShape(piece, X)
@@ -151,27 +160,88 @@ func drawBoard(b* Board) {
 }
 
 
-func drawShape(b BoardPiece, s Shape) {
-	width := b.Box.xf - b.Box.xo
-	height := b.Box.yf - b.Box.yo
+func drawShape(b Limits, s Shape, big bool) {
+	width := b.xf - b.xo
+	height := b.yf - b.yo
 	gap := BoardGap + 10
 
 	if s == X {
 		for i:=int32(0); i < 100; i ++ {
-			xl := b.Box.xo + gap + i*(width - 2*gap)/100
-			xr := b.Box.xf - gap - i*(width - 2*gap)/100
-			y := b.Box.yo + gap + i*(height - 2*gap)/100
+			xl := b.xo + gap + i*(width - 2*gap)/100
+			xr := b.xf - gap - i*(width - 2*gap)/100
+			y := b.yo + gap + i*(height - 2*gap)/100
 
-			rl.DrawCircle(xl, y, 3, rl.Red)
-			rl.DrawCircle(xr, y, 3, rl.Red)
+			if big {
+
+				rl.DrawCircle(xl, y, 3, rl.DarkPurple)
+				rl.DrawCircle(xr, y, 3, rl.DarkPurple)
+				
+			}else {
+				rl.DrawCircle(xl, y, 3, rl.Red)
+				rl.DrawCircle(xr, y, 3, rl.Red)
+			}
 		}
 	} else if s == O {
 		radius := (width - 2*gap)/2 -5
 		for i:=0 ; i < 6; i++ {
-			rl.DrawCircleLines((b.Box.xf + b.Box.xo)/2, (b.Box.yf + b.Box.yo)/2, float32(radius)+float32(i), rl.Blue)
+			if big {
+				rl.DrawCircleLines((b.xf + b.xo)/2, (b.yf + b.yo)/2, float32(radius)+float32(i), rl.DarkBlue)
+				
+			} else {
+				rl.DrawCircleLines((b.xf + b.xo)/2, (b.yf + b.yo)/2, float32(radius)+float32(i), rl.Blue)
+			}
+			
 		}
 	}
 }
+
+func (b* Board)CheckGameState() { // recicling code from my tic tac toe game
+	// b.BoardState = VICTORYO
+	
+
+	for i:=0 ; i < 3; i++ {
+		// checking lines
+		if b.Content[3*i].Shape == NAS {
+				
+		} else if b.Content[3*i].Shape == b.Content[3*i+1].Shape &&  b.Content[3*i].Shape == b.Content[3*i+2].Shape {
+			if b.Content[3*i].Shape == X {
+				b.BoardState = VICTORYX
+			} else {
+				b.BoardState = VICTORYO
+			}
+			
+		}
+
+		// checking rows
+		if b.Content[i].Shape == NAS {
+				
+		} else if b.Content[i].Shape == b.Content[i+3].Shape && b.Content[i].Shape == b.Content[i+6].Shape {
+			if b.Content[i].Shape == X {
+				b.BoardState = VICTORYX
+			} else {
+				b.BoardState = VICTORYO
+			}
+		}               
+
+		}
+		// checking diagonals
+
+		if (b.Content[0].Shape != NAS)&&b.Content[0].Shape==b.Content[4].Shape && b.Content[0].Shape==b.Content[8].Shape {
+			if b.Content[0].Shape == X {
+				b.BoardState = VICTORYX
+			} else {
+				b.BoardState = VICTORYO
+			}
+		} else if (b.Content[2].Shape != NAS) &&b.Content[2].Shape==b.Content[4].Shape && b.Content[2].Shape==b.Content[6].Shape {
+			if b.Content[2].Shape == X {
+				b.BoardState = VICTORYX
+			} else {
+				b.BoardState = VICTORYO
+			}
+		}
+		
+}
+
 
 /*
 
