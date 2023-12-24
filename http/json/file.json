@@ -1,0 +1,24 @@
+{
+    
+    "usuarios" : [
+        {
+             
+                "nome" : "jose carlos",
+                "idades" : [12, 12,14]
+            
+        },
+        {
+             
+                "nome" : "mariaa",
+                "idades" : [23 , 34, 1]
+        
+        },
+        {
+            
+                "nome" : "anderson",
+                "idades" : [2, 2,4]
+            
+        }
+    
+    ]
+}

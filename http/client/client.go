@@ -20,6 +20,7 @@ func main() {
 	// reading content response
 	scanner := bufio.NewScanner(resp.Body)
 	
+	// make only for ;scanner.Scan(); to read everythin (unsafe)
 	for i := 0; scanner.Scan() && i < 5; i++ { // reading the first 5 lines of response or untill theres no more content
 		fmt.Println(scanner.Text())
 	}
